@@ -11,35 +11,59 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+# ------------------------------
+# Real Estate: Hyderabad
+# ------------------------------
 
+class Property(BaseModel):
+    """
+    Properties collection schema
+    Collection name: "property"
+    """
+    title: str = Field(..., description="Listing title")
+    description: Optional[str] = Field(None, description="Short description")
+    price_in_inr: int = Field(..., ge=0, description="Price in INR")
+    location: str = Field(..., description="Locality/Area in Hyderabad")
+    city: str = Field("Hyderabad", description="City")
+    bedrooms: Optional[int] = Field(None, ge=0)
+    bathrooms: Optional[int] = Field(None, ge=0)
+    area_sqft: Optional[int] = Field(None, ge=0)
+    property_type: str = Field(..., description="Apartment, Villa, Plot, Commercial")
+    amenities: List[str] = Field(default_factory=list)
+    image_url: Optional[str] = None
+    status: str = Field("available", description="available, booked, sold")
+
+class Inquiry(BaseModel):
+    """
+    Inquiries (leads) collection schema
+    Collection name: "inquiry"
+    """
+    name: str = Field(..., description="Full name of lead")
+    email: EmailStr = Field(..., description="Email address")
+    phone: Optional[str] = Field(None, description="Phone number")
+    message: Optional[str] = Field(None, description="Message from lead")
+    interested_location: Optional[str] = Field(None, description="Area of interest in Hyderabad")
+    budget_in_inr: Optional[int] = Field(None, ge=0)
+    property_type: Optional[str] = Field(None)
+    source: str = Field("website", description="Lead source")
+
+# Example schemas (kept for reference)
 class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    name: str
+    email: str
+    address: str
+    age: Optional[int] = None
+    is_active: bool = True
 
 class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
-
-# Add your own schemas here:
-# --------------------------------------------------
+    title: str
+    description: Optional[str] = None
+    price: float
+    category: str
+    in_stock: bool = True
 
 # Note: The Flames database viewer will automatically:
 # 1. Read these schemas from GET /schema endpoint
